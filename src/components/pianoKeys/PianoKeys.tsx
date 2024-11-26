@@ -24,6 +24,7 @@ interface PianoKeysProps {
 const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote }) => {
 	const [isCorrectNoteMessageOn, setIsCorrectNoteMessageOn] = useState(false);
 	const [isIncorrectNoteMessageOn, setIsIncorrectNoteMessageOn] = useState(false);
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Precargamos los audios al inicio
 	const audioElements = React.useMemo(
@@ -69,18 +70,31 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote }) =>
 	}
 
 	function handleResponseClick(noteFromKey: NoteValue, currentNote: NoteValue) {
+		if (isProcessing) return;
+
+		setIsProcessing(true);
+
 		if (noteFromKey === currentNote) {
 			console.log("%cEs la nota correcta", "color: green");
-			setCurrentNote(pickRandomNote(NOTES));
+
+			const newNote = pickRandomNote(NOTES);
+			if (newNote === currentNote) {
+				setCurrentNote(pickRandomNote(NOTES.filter((note) => note !== currentNote)));
+			} else {
+				setCurrentNote(newNote);
+			}
+
 			setIsCorrectNoteMessageOn(true);
 			setTimeout(() => {
 				setIsCorrectNoteMessageOn(false);
+				setIsProcessing(false);
 			}, 1000);
 		} else {
 			console.log("%cNo es la nota correcta", "color: red");
 			setIsIncorrectNoteMessageOn(true);
 			setTimeout(() => {
 				setIsIncorrectNoteMessageOn(false);
+				setIsProcessing(false);
 			}, 1500);
 		}
 	}
