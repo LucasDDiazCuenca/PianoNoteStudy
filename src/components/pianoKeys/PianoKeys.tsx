@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 import doSound from "/sounds/do.mp3";
 import reSound from "/sounds/re.mp3";
@@ -12,21 +13,22 @@ import whiteKeyImg from "../../assets/keyboard/whiteKey.svg";
 import blackKeyImg from "../../assets/keyboard/blackKey.svg";
 
 import { NoteValue } from "../../helpers/types";
-
 import { NOTES } from "../../helpers/Constants";
 import { pickRandomNote } from "../../helpers/helpers";
 
 interface PianoKeysProps {
 	currentNote: NoteValue;
 	setCurrentNote: (note: NoteValue) => void;
+	score: number;
+	setScore: (score: number) => void;
+	setResetTimer: (reset: boolean) => void;
 }
 
-const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote }) => {
+const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote, score, setScore, setResetTimer }) => {
 	const [isCorrectNoteMessageOn, setIsCorrectNoteMessageOn] = useState(false);
 	const [isIncorrectNoteMessageOn, setIsIncorrectNoteMessageOn] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 
-	// Precargamos los audios al inicio
 	const audioElements = React.useMemo(
 		() => ({
 			do: new Audio(doSound),
@@ -76,6 +78,8 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote }) =>
 
 		if (noteFromKey === currentNote) {
 			console.log("%cEs la nota correcta", "color: green");
+			setScore(score + 5);
+			setResetTimer(true);
 
 			const newNote = pickRandomNote(NOTES);
 			if (newNote === currentNote) {
@@ -85,148 +89,172 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote }) =>
 			}
 
 			setIsCorrectNoteMessageOn(true);
+
 			setTimeout(() => {
 				setIsCorrectNoteMessageOn(false);
 				setIsProcessing(false);
+				setResetTimer(false);
 			}, 1000);
 		} else {
 			console.log("%cNo es la nota correcta", "color: red");
+			setScore(Math.max(0, score - 3));
+			setResetTimer(true);
 			setIsIncorrectNoteMessageOn(true);
+
 			setTimeout(() => {
 				setIsIncorrectNoteMessageOn(false);
 				setIsProcessing(false);
+				setResetTimer(false);
 			}, 1500);
 		}
 	}
 
 	return (
-		<div className="piano-keys bg-zinc-500 h-[240px] flex justify-center items-center relative">
-			{/* White keys */}
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[4px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="doKey"
-				width={55}
-				onClick={() => {
-					playSound("do");
-					handleResponseClick("do", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[58px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="reKey"
-				width={55}
-				onClick={() => {
-					playSound("re");
-					handleResponseClick("re", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[112px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="miKey"
-				width={55}
-				onClick={() => {
-					playSound("mi");
-					handleResponseClick("mi", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[166px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="faKey"
-				width={55}
-				onClick={() => {
-					playSound("fa");
-					handleResponseClick("fa", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[220px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="solKey"
-				width={55}
-				onClick={() => {
-					playSound("sol");
-					handleResponseClick("sol", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[274px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="laKey"
-				width={55}
-				onClick={() => {
-					playSound("la");
-					handleResponseClick("la", currentNote);
-				}}
-			/>
-			<img
-				src={whiteKeyImg}
-				alt="whiteKey"
-				className="absolute left-[328px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="siKey"
-				width={55}
-				onClick={() => {
-					playSound("si");
-					handleResponseClick("si", currentNote);
-				}}
-			/>
+		<motion.div
+			className="piano-keys bg-zinc-700 h-[240px] flex justify-center items-center relative"
+			initial={{ opacity: 0, y: -100 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.9 }}
+		>
+			<div className="relative top-[-110px] w-[387px]">
+				{/* White keys */}
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[4px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="doKey"
+					width={55}
+					onClick={() => {
+						playSound("do");
+						handleResponseClick("do", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[58px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="reKey"
+					width={55}
+					onClick={() => {
+						playSound("re");
+						handleResponseClick("re", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[112px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="miKey"
+					width={55}
+					onClick={() => {
+						playSound("mi");
+						handleResponseClick("mi", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[166px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="faKey"
+					width={55}
+					onClick={() => {
+						playSound("fa");
+						handleResponseClick("fa", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[220px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="solKey"
+					width={55}
+					onClick={() => {
+						playSound("sol");
+						handleResponseClick("sol", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[274px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="laKey"
+					width={55}
+					onClick={() => {
+						playSound("la");
+						handleResponseClick("la", currentNote);
+					}}
+				/>
+				<img
+					src={whiteKeyImg}
+					alt="whiteKey"
+					className="absolute left-[328px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="siKey"
+					width={55}
+					onClick={() => {
+						playSound("si");
+						handleResponseClick("si", currentNote);
+					}}
+				/>
 
-			{/* Black keys */}
-			<img
-				src={blackKeyImg}
-				alt="blackKey"
-				className="absolute top-[11px] left-[41px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="doSharpKey"
-				width={35}
-			/>
-			<img
-				src={blackKeyImg}
-				alt="blackKey"
-				className="absolute top-[11px] left-[95px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="reSharpKey"
-				width={35}
-			/>
-			<img
-				src={blackKeyImg}
-				alt="blackKey"
-				className="absolute top-[11px] left-[203px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="miSharpKey"
-				width={35}
-			/>
-			<img
-				src={blackKeyImg}
-				alt="blackKey"
-				className="absolute top-[11px] left-[257px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="faSharpKey"
-				width={35}
-			/>
-			<img
-				src={blackKeyImg}
-				alt="blackKey"
-				className="absolute top-[11px] left-[310px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
-				id="solSharpKey"
-				width={35}
-			/>
+				{/* Black keys */}
+				<img
+					src={blackKeyImg}
+					alt="blackKey"
+					className="absolute left-[41px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="doSharpKey"
+					width={35}
+				/>
+				<img
+					src={blackKeyImg}
+					alt="blackKey"
+					className="absolute left-[95px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="reSharpKey"
+					width={35}
+				/>
+				<img
+					src={blackKeyImg}
+					alt="blackKey"
+					className="absolute left-[203px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="miSharpKey"
+					width={35}
+				/>
+				<img
+					src={blackKeyImg}
+					alt="blackKey"
+					className="absolute left-[257px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="faSharpKey"
+					width={35}
+				/>
+				<img
+					src={blackKeyImg}
+					alt="blackKey"
+					className="absolute left-[310px] h-[155px] transition-transform active:translate-y-1 active:brightness-95 cursor-pointer"
+					id="solSharpKey"
+					width={35}
+				/>
+			</div>
+
 			{isCorrectNoteMessageOn && (
-				<p className="text-xl absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-green-500">
-					Es la nota correcta
-				</p>
+				<motion.p
+					className="text-xl absolute bottom-[-50px] -translate-x-1/2 text-green-400 font-semibold"
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.5 }}
+				>
+					¡Nota correcta!
+				</motion.p>
 			)}
 			{isIncorrectNoteMessageOn && (
-				<p className="text-xl absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-red-500">
-					No es la correcta
-				</p>
+				<motion.p
+					className="text-xl absolute bottom-[-50px] -translate-x-1/2 text-red-400 font-semibold"
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.5 }}
+				>
+					Nota incorrecta
+				</motion.p>
 			)}
-		</div>
+		</motion.div>
 	);
 };
 
