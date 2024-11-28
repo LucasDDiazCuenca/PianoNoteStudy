@@ -12,9 +12,20 @@ import { ClefValue } from "../../helpers/types";
 interface MenuProps {
 	currentClef: ClefValue;
 	setCurrentClef: (clef: ClefValue) => void;
+	useBothClefs: boolean;
+	setUseBothClefs: (use: boolean) => void;
+	volume: number;
+	setVolume: (volume: number) => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ currentClef, setCurrentClef }) => {
+const Menu: React.FC<MenuProps> = ({
+	currentClef,
+	setCurrentClef,
+	useBothClefs,
+	setUseBothClefs,
+	volume,
+	setVolume,
+}) => {
 	const [isAboutOpen, setIsAboutOpen] = useState(false);
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -56,6 +67,10 @@ const Menu: React.FC<MenuProps> = ({ currentClef, setCurrentClef }) => {
 				onClose={() => setIsSettingsOpen(false)}
 				currentClef={currentClef}
 				setCurrentClef={setCurrentClef}
+				useBothClefs={useBothClefs}
+				setUseBothClefs={setUseBothClefs}
+				volume={volume}
+				setVolume={setVolume}
 			/>
 		</>
 	);

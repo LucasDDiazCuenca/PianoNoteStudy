@@ -6,6 +6,14 @@ function pickRandomNote(notes: any): NoteValue {
 	return notes[Math.floor(Math.random() * notes.length)];
 }
 
+function pickRandomClef(currentClef: ClefValue): ClefValue {
+	const randomNumber = Math.random();
+	if (randomNumber < 0.5) {
+		return currentClef;
+	}
+	return currentClef === "treble" ? "bass" : "treble";
+}
+
 function pickRandomNotePosition(clef: ClefValue, note: NoteValue): NoteRandomInfo | undefined {
 	if (!clef || !note) {
 		return undefined;
@@ -38,4 +46,4 @@ function pickRandomNotePosition(clef: ClefValue, note: NoteValue): NoteRandomInf
 	return noteRandomPosition;
 }
 
-export { pickRandomNote, pickRandomNotePosition };
+export { pickRandomNote, pickRandomNotePosition, pickRandomClef };
