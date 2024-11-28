@@ -12,9 +12,9 @@ import siSound from "/sounds/si.mp3";
 import whiteKeyImg from "../../assets/keyboard/whiteKey.svg";
 import blackKeyImg from "../../assets/keyboard/blackKey.svg";
 
-import { NoteValue } from "../../helpers/types";
+import { NoteValue, ClefValue } from "../../helpers/types";
 import { NOTES } from "../../helpers/Constants";
-import { pickRandomNote } from "../../helpers/helpers";
+import { pickRandomNote, pickRandomClef } from "../../helpers/helpers";
 
 interface PianoKeysProps {
 	currentNote: NoteValue;
@@ -22,9 +22,23 @@ interface PianoKeysProps {
 	score: number;
 	setScore: (score: number) => void;
 	setResetTimer: (reset: boolean) => void;
+	useBothClefs: boolean;
+	currentClef: ClefValue;
+	setCurrentClef: (clef: ClefValue) => void;
+	volume: number;
 }
 
-const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote, score, setScore, setResetTimer }) => {
+const PianoKeys: React.FC<PianoKeysProps> = ({
+	currentNote,
+	setCurrentNote,
+	score,
+	setScore,
+	setResetTimer,
+	useBothClefs,
+	currentClef,
+	setCurrentClef,
+	volume,
+}) => {
 	const [isCorrectNoteMessageOn, setIsCorrectNoteMessageOn] = useState(false);
 	const [isIncorrectNoteMessageOn, setIsIncorrectNoteMessageOn] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -50,6 +64,7 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote, scor
 		}
 
 		const audio = audioElements[key];
+		audio.volume = volume / 100;
 		currentAudio.current = audio;
 
 		audio.currentTime = key === "si" ? 1 : 0.4;
@@ -77,7 +92,6 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote, scor
 		setIsProcessing(true);
 
 		if (noteFromKey === currentNote) {
-			console.log("%cEs la nota correcta", "color: green");
 			setScore(score + 5);
 			setResetTimer(true);
 
@@ -86,6 +100,10 @@ const PianoKeys: React.FC<PianoKeysProps> = ({ currentNote, setCurrentNote, scor
 				setCurrentNote(pickRandomNote(NOTES.filter((note) => note !== currentNote)));
 			} else {
 				setCurrentNote(newNote);
+			}
+
+			if (useBothClefs) {
+				setCurrentClef(pickRandomClef(currentClef));
 			}
 
 			setIsCorrectNoteMessageOn(true);
